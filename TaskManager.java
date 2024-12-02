@@ -1,29 +1,33 @@
-import java.time.Year;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.time.Year; // Importing the Year class to get the current year
+import java.util.ArrayList; // Importing ArrayList for managing the list of tasks
+import java.util.Scanner; // Importing Scanner for user input
 
+// Class representing a deadline for a task
 class Deadline {
     int day, month, year;
 
+    // Constructor to initialize the deadline
     public Deadline(int day, int month, int year) {
         this.day = day;
         this.month = month;
         this.year = year;
     }
 
+    // Method to return deadline as a formatted string
     @Override
     public String toString() {
         return String.format("%02d/%02d/%d", day, month, year);
     }
 }
 
-
+// Class representing a task
 class Task {
-    String title, description;
-    Deadline deadline;
-    int priority;
-    int status;
+    String title, description; // Task title and description
+    Deadline deadline; // Task deadline
+    int priority; // Task priority (0 = low, 1 = high)
+    int status; // Task status (0 = incomplete, 1 = complete)
 
+    // Constructor to initialize the task
     public Task(String title, String description, Deadline deadline, int priority, int status) {
         this.title = title;
         this.description = description;
@@ -32,99 +36,108 @@ class Task {
         this.status = status;
     }
 
+    // Method to return task details as a formatted string
     @Override
     public String toString() {
         return "Title: " + title +
                "\nDescription: " + description +
                "\nDeadline: " + deadline +
                "\nPriority: " + (priority == 1 ? "High" : "Low") +
-               "\nStatus: " + (status == 1? "Complete" : "Incomplete");
+               "\nStatus: " + (status == 1 ? "Complete" : "Incomplete");
     }
 }
 
+// Main class for managing tasks
 public class TaskManager {
-    private ArrayList<Task> tasks = new ArrayList<>();
-    private Scanner scanner = new Scanner(System.in);
+    private ArrayList<Task> tasks = new ArrayList<>(); // List of tasks
+    private Scanner scanner = new Scanner(System.in); // Scanner for user input
 
-    // Add a new task
+    // Method to add a new task
     public void addTask() {
+        // Get task title and description from the user
         System.out.print("Enter task title: ");
         String title = scanner.nextLine();
-
         System.out.print("Enter task description: ");
         String description = scanner.nextLine();
 
-    
-
-    
-
         int currentYear = Year.now().getValue(); // Get the current year
-        
+
+        // Variables for deadline, priority, and status
+        int day, month, year, priority, status;
+
+        // Input validation for day
+        do {
+            System.out.print("Enter deadline day: ");
+            day = scanner.nextInt();
+            if (day < 1 || day > 31) {
+                System.out.println("     Invalid day. Enter a valid day (1-31).\n");
+            }
+        } while (day < 1 || day > 31);
+
+        // Input validation for month
+        do {
+            System.out.print("Enter deadline month: ");
+            month = scanner.nextInt();
+            if (month < 1 || month > 12) {
+                System.out.println("     Invalid Month. Enter a valid Month (1-12).\n");
+            }
+        } while (month < 1 || month > 12);
+
+        // Input validation for year
+        do {
+            System.out.print("Enter deadline year: ");
+            year = scanner.nextInt();
+            if (year < currentYear) {
+                System.out.println("Invalid year. Enter a year greater than " + currentYear);
+            }
+        } while (year < currentYear);
+
+        // Input validation for priority
+        do {
+            System.out.print("Enter priority (0 for low, 1 for high): ");
+            priority = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+            if (priority < 0 || priority > 1) {
+                System.out.println("Invalid priority, Please enter only (0 for low, 1 for high) ");
+            }
+        } while (priority < 0 || priority > 1);
+
+        // Add the new task to the list
+        tasks.add(new Task(title, description, new Deadline(day, month, year), priority, status = 0));
+        System.out.println("==============================================");
+        System.out.println("========== Task added successfully!===========");
+        System.out.println("==============================================");
+        System.out.println("\n");
 
 
-        int day, month, year, priority,status;
-    do { 
-        System.out.print("Enter deadline day: ");
-        day = scanner.nextInt();
-        if (day < 1 || day > 31) {
-            System.out.println("     Invalid day. Enter a valid day (1-31).\n");
-        }
-} while (day < 1 || day > 31);
-do{
-        System.out.print("Enter deadline month: ");
-        month = scanner.nextInt();
-        if(month<1 || month>12){
-            System.out.println("     Invalid Month. Enter a valid Month (1-12).\n");
-        }
-    }while(month<1 || month>12);
-
-    do{
-        System.out.print("Enter deadline year: ");
-        year = scanner.nextInt();
-if(year<currentYear){
-    System.out.println("Invalid year. Enter a year greater than " + currentYear  );
-}
-    }while(year<currentYear);
-
-    do{ 
-        System.out.print("Enter priority (0 for low, 1 for high): ");
-        priority = scanner.nextInt();
-        scanner.nextLine();  // consume newline
-if(priority < 0 || priority >1){
-System.out.println("Invalid priority , Please entre only (0 for low, 1 for high) ");
-}
-}while(priority < 0 || priority >1);
-    
-
-        tasks.add(new Task(title, description, new Deadline(day, month, year), priority,status=0));
-        System.out.println("Task added successfully!");
     }
 
-
-
-    // Display all tasks
+    // Method to display all tasks
     public void displayTasks() {
         if (tasks.isEmpty()) {
-            System.out.println("No tasks available.");
+            System.out.println("No tasks available."); // Message if no tasks exist
         } else {
             for (int i = 0; i < tasks.size(); i++) {
-                System.out.println("============ Task " + (i + 1) + ":============");
-                System.out.println(tasks.get(i));
                 System.out.println("================================");
+                System.out.println("============ Task " + (i + 1) + ":============");
+                System.out.println("================================");
+
+                System.out.println(tasks.get(i));
+
             }
         }
     }
 
-    // Modify a task
+    // Method to modify an existing task
     public void modifyTask() {
-
         int currentYear = Year.now().getValue(); // Get the current year
 
+        // Prompt user to select a task to modify
         System.out.print("Enter the task number to modify (1 to " + tasks.size() + "): ");
         int index = scanner.nextInt() - 1;
 
-        if (index >= 0 && index < tasks.size()) {
-            Task task = tasks.get(index);
+        if (index >= 0 && index < tasks.size()) { // Check if the task number is valid
+            Task task = tasks.get(index); // Get the selected task
             System.out.println("1- Modify title");
             System.out.println("2- Modify description");
             System.out.println("3- Modify deadline");
@@ -132,8 +145,9 @@ System.out.println("Invalid priority , Please entre only (0 for low, 1 for high)
             System.out.println("5- Modify status");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
-            scanner.nextLine();  // consume newline
+            scanner.nextLine(); // Consume newline
 
+            // Perform the modification based on the user's choice
             switch (choice) {
                 case 1 -> {
                     System.out.print("Enter new title: ");
@@ -144,50 +158,51 @@ System.out.println("Invalid priority , Please entre only (0 for low, 1 for high)
                     task.description = scanner.nextLine();
                 }
                 case 3 -> {
-do{
-                    System.out.print("Enter new deadline day: ");
-                    task.deadline.day = scanner.nextInt();
-    if(task.deadline.day<1 || task.deadline.day>31){
-    System.out.println("Invalid day. Enter a valid day (1-31)");
-}
-    }while(task.deadline.day<1 || task.deadline.day>31);
-do{
-                    System.out.print("Enter new deadline month: ");
-                    task.deadline.month = scanner.nextInt();
-     if(task.deadline.month<1 || task.deadline.month>12){
-                        System.out.println("Invalid Month. Enter a valid day (1-12)");
-                    }
-     }while(task.deadline.month<1 || task.deadline.month>12);
-
-     do{
-                    System.out.print("Enter new deadline year: ");
-                    task.deadline.year = scanner.nextInt();
-                    scanner.nextLine(); // consume newline
-         if(task.deadline.year<currentYear) {
-
-         System.out.println("Enter a year greater than " + currentYear);                 
-}
-}while(task.deadline.year<currentYear);
+                    // Modify deadline with input validation
+                    do {
+                        System.out.print("Enter new deadline day: ");
+                        task.deadline.day = scanner.nextInt();
+                        if (task.deadline.day < 1 || task.deadline.day > 31) {
+                            System.out.println("Invalid day. Enter a valid day (1-31)");
+                        }
+                    } while (task.deadline.day < 1 || task.deadline.day > 31);
+                    do {
+                        System.out.print("Enter new deadline month: ");
+                        task.deadline.month = scanner.nextInt();
+                        if (task.deadline.month < 1 || task.deadline.month > 12) {
+                            System.out.println("Invalid Month. Enter a valid day (1-12)");
+                        }
+                    } while (task.deadline.month < 1 || task.deadline.month > 12);
+                    do {
+                        System.out.print("Enter new deadline year: ");
+                        task.deadline.year = scanner.nextInt();
+                        scanner.nextLine(); // Consume newline
+                        if (task.deadline.year < currentYear) {
+                            System.out.println("Enter a year greater than " + currentYear);
+                        }
+                    } while (task.deadline.year < currentYear);
                 }
                 case 4 -> {
-                    do{
-                    System.out.print("Enter new priority (0 for low, 1 for high): ");
-                    task.priority = scanner.nextInt();
-                    scanner.nextLine(); // consume newline
-                    if(task.priority < 0 || task.priority >1){
-                        System.out.println("Invalid priority , Please entre only (0 for low, 1 for high) ");
+                    // Modify priority with input validation
+                    do {
+                        System.out.print("Enter new priority (0 for low, 1 for high): ");
+                        task.priority = scanner.nextInt();
+                        scanner.nextLine(); // Consume newline
+                        if (task.priority < 0 || task.priority > 1) {
+                            System.out.println("Invalid priority, Please enter only (0 for low, 1 for high) ");
                         }
-                        }while(task.priority < 0 || task.priority >1);
+                    } while (task.priority < 0 || task.priority > 1);
                 }
                 case 5 -> {
-                    do{
-                    System.out.print("Enter new status (0 for incomplete, 1 for complete): ");
-                    task.status = scanner.nextInt();
-                    scanner.nextLine(); // consume newline
-                    if(task.status < 0 || task.status >1){
-                        System.out.println("Invalid Status , Please entre only (0 for Incomplete, 1 for Complete) ");
+                    // Modify status with input validation
+                    do {
+                        System.out.print("Enter new status (0 for incomplete, 1 for complete): ");
+                        task.status = scanner.nextInt();
+                        scanner.nextLine(); // Consume newline
+                        if (task.status < 0 || task.status > 1) {
+                            System.out.println("Invalid Status, Please enter only (0 for Incomplete, 1 for Complete) ");
                         }
-                        }while(task.status < 0 || task.status >1);
+                    } while (task.status < 0 || task.status > 1);
                 }
                 default -> System.out.println("Invalid choice.");
             }
@@ -197,25 +212,26 @@ do{
         }
     }
 
-    // Delete a task
+    // Method to delete a task
     public void deleteTask() {
+        // Prompt user to select a task to delete
         System.out.print("Enter the task number to delete (1 to " + tasks.size() + "): ");
         int index = scanner.nextInt() - 1;
-        scanner.nextLine();  //consume newline
+        scanner.nextLine(); // Consume newline
 
-        if (index >= 0 && index < tasks.size()) {
-            tasks.remove(index);
+        if (index >= 0 && index < tasks.size()) { // Check if the task number is valid
+            tasks.remove(index); // Remove the selected task
             System.out.println("Task deleted successfully.");
         } else {
             System.out.println("Invalid task number.");
         }
     }
 
-    // Filter tasks by priority
+    // Method to filter tasks by priority
     public void filterByPriority(int priority) {
-        boolean found = false;
+        boolean found = false; // Flag to check if any task matches the criteria
         for (Task task : tasks) {
-            if (task.priority == priority) {
+            if (task.priority == priority) { // Check if the task matches the priority
                 System.out.println(task);
                 System.out.println("----------------------");
                 found = true;
@@ -224,11 +240,11 @@ do{
         if (!found) System.out.println("No tasks found with the specified priority.");
     }
 
-    // Filter tasks by status
+    // Method to filter tasks by status
     public void filterByStatus(int status) {
-        boolean found = false;
+        boolean found = false; // Flag to check if any task matches the criteria
         for (Task task : tasks) {
-            if (task.status == status) {
+            if (task.status == status) { // Check if the task matches the status
                 System.out.println(task);
                 System.out.println("----------------------");
                 found = true;
@@ -237,9 +253,10 @@ do{
         if (!found) System.out.println("No tasks found with the specified status.");
     }
 
-    // Sort tasks by ascending deadline
+    // Method to sort tasks by ascending deadline
     public void sortByAscendingDeadline() {
         tasks.sort((task1, task2) -> {
+            // Compare years, then months, then days
             if (task1.deadline.year != task2.deadline.year)
                 return task1.deadline.year - task2.deadline.year;
             if (task1.deadline.month != task2.deadline.month)
@@ -247,11 +264,13 @@ do{
             return task1.deadline.day - task2.deadline.day;
         });
         System.out.println("Tasks sorted by ascending deadline.");
+        displayTasks();
     }
 
-    // Sort tasks by descending deadline
+    // Method to sort tasks by descending deadline
     public void sortByDescendingDeadline() {
         tasks.sort((task1, task2) -> {
+            // Compare years, then months, then days
             if (task2.deadline.year != task1.deadline.year)
                 return task2.deadline.year - task1.deadline.year;
             if (task2.deadline.month != task1.deadline.month)
@@ -259,12 +278,18 @@ do{
             return task2.deadline.day - task1.deadline.day;
         });
         System.out.println("Tasks sorted by descending deadline.");
+        displayTasks();
     }
 
-    // Main menu
+    // Main menu to interact with the user
     public void start() {
         int choice;
         do {
+            // Display menu options
+            System.out.println("======================================");
+            System.out.println("=================MENU=================");
+            System.out.println("======================================");
+
             System.out.println("1- Add Task");
             System.out.println("2- Display Tasks");
             System.out.println("3- Modify Task");
@@ -276,8 +301,9 @@ do{
             System.out.println("9- Quit");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
-            scanner.nextLine();  // consume newline
+            scanner.nextLine(); // Consume newline
 
+            // Perform the chosen operation
             switch (choice) {
                 case 1 -> addTask();
                 case 2 -> displayTasks();
@@ -300,11 +326,12 @@ do{
                 case 9 -> System.out.println("Exiting...");
                 default -> System.out.println("Invalid choice.");
             }
-        } while (choice != 9);
+        } while (choice != 9); // Repeat until the user chooses to quit
     }
 
+    // Main method to run the program
     public static void main(String[] args) {
-        TaskManager taskManager = new TaskManager();
-        taskManager.start();
+        TaskManager taskManager = new TaskManager(); // Create TaskManager object
+        taskManager.start(); // Start the menu
     }
 }
